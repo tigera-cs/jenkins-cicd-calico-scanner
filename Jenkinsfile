@@ -1,9 +1,23 @@
 pipeline {
     agent any
     environment {
+        // Your Google Cloud project ID
         PROJECT_ID = 'tigera-customer-success'
+
+        // Your desired image name
         IMAGE_NAME = 'faisal-test'
+
+        // The branch to build from
         BRANCH_NAME = 'main'
+
+        // Your Artifact Registry repository name
+        REPO_NAME = 'faisal-test-gcr-artifactory'
+
+        // The location of your Artifact Registry repository
+        LOCATION = 'northamerica-northeast2'
+
+        // The Artifact Registry hostname
+        REGISTRY = 'northamerica-northeast2-docker.pkg.dev'
     }
     stages {
         stage('Checkout') {
@@ -24,16 +38,19 @@ pipeline {
                         returnStdout: true
                     ).trim()
                 }
-                // Optional: Print the COMMIT_HASH to the console for verification
+                // Print the COMMIT_HASH to the console for verification
                 echo "COMMIT_HASH is ${COMMIT_HASH}"
             }
         }
-        stage('Authenticate with GCR') {
+        stage('Authenticate with Artifact Registry') {
             steps {
                 withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     sh '''
+                        echo "Activating service account..."
                         gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS" --quiet
-                        gcloud auth configure-docker --quiet
+
+                        echo "Configuring Docker to use Artifact Registry..."
+                        gcloud auth configure-docker ${REGISTRY} --quiet
                     '''
                 }
             }
@@ -41,14 +58,16 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                    docker build -t gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${COMMIT_HASH} .
+                    echo "Building Docker image..."
+                    docker build -t ${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH} .
                 '''
             }
         }
         stage('Push Docker Image') {
             steps {
                 sh '''
-                    docker push gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${COMMIT_HASH}
+                    echo "Pushing Docker image to Artifact Registry..."
+                    docker push ${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH}
                 '''
             }
         }
