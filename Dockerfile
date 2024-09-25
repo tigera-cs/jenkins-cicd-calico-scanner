@@ -1,5 +1,5 @@
 # Use Alpine Linux version 3.16.2
-FROM alpine:3.16.3
+FROM alpine:3.20.3
 
 # Install busybox-extras to get the httpd command
 RUN apk add --no-cache busybox-extras
