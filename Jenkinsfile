@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'docker'
-    }
+    agent any
     environment {
         PROJECT_ID = 'tigera-customer-success'
         IMAGE_NAME = 'faisal-test'
