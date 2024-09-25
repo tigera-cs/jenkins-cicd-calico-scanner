@@ -17,11 +17,8 @@ pipeline {
         }
         stage('Authenticate with GCR') {
             steps {
-                withCredentials([string(credentialsId: 'jenkins-service-account-faisal', variable: 'GOOGLE_CREDENTIALS_JSON')]) {
+                withGoogleOAuth(credentialsId: 'jenkins-service-account-faisal') {
                     sh '''
-                        echo "$GOOGLE_CREDENTIALS_JSON" > gcp-key.json
-                        gcloud auth activate-service-account --key-file=gcp-key.json --quiet
-                        gcloud config set project $PROJECT_ID
                         gcloud auth configure-docker --quiet
                     '''
                 }
@@ -45,7 +42,7 @@ pipeline {
     }
     post {
         always {
-            sh 'rm -f gcp-key.json'
+            cleanWs()
         }
     }
 }
