@@ -15,6 +15,19 @@ pipeline {
                 )
             }
         }
+        stage('Set COMMIT_HASH') {
+            steps {
+                script {
+                    // Retrieve the short commit hash and assign it to an environment variable
+                    env.COMMIT_HASH = sh(
+                        script: 'git rev-parse --short HEAD',
+                        returnStdout: true
+                    ).trim()
+                }
+                // Optional: Print the COMMIT_HASH to the console for verification
+                echo "COMMIT_HASH is ${COMMIT_HASH}"
+            }
+        }
         stage('Authenticate with GCR') {
             steps {
                 withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
@@ -28,7 +41,6 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                    COMMIT_HASH=$(git rev-parse --short HEAD)
                     docker build -t gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${COMMIT_HASH} .
                 '''
             }
