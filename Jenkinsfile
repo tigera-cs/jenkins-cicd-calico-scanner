@@ -1,23 +1,19 @@
 pipeline {
     agent any
     environment {
-        // Your Google Cloud project ID
-        PROJECT_ID = 'tigera-customer-success'
+        // Existing environment variables
+        PROJECT_ID = 'tigera-customer-success'             // Your Google Cloud project ID
+        IMAGE_NAME = 'faisal-test'                         // Your desired image name
+        BRANCH_NAME = 'main'                               // The branch to build from
+        REPO_NAME = 'faisal-test-gcr-artifactory'          // Your Artifact Registry repository name
+        LOCATION = 'northamerica-northeast2'               // The location of your Artifact Registry repository
+        REGISTRY = 'northamerica-northeast2-docker.pkg.dev'// The Artifact Registry hostname
 
-        // Your desired image name
-        IMAGE_NAME = 'faisal-test'
-
-        // The branch to build from
-        BRANCH_NAME = 'main'
-
-        // Your Artifact Registry repository name
-        REPO_NAME = 'faisal-test-gcr-artifactory'
-
-        // The location of your Artifact Registry repository
-        LOCATION = 'northamerica-northeast2'
-
-        // The Artifact Registry hostname
-        REGISTRY = 'northamerica-northeast2-docker.pkg.dev'
+        // Calico Image Assurance variables
+        CALICO_SCANNER_URL = 'https://installer.calicocloud.io/tigera-scanner/v3.20.0-1.0-10/image-assurance-scanner-cli-linux-amd64'
+        CALICO_SCANNER_API_URL = 'https://qq9psbdn-management.calicocloud.io/bast'  // Replace with your actual API URL if different
+        CALICO_SCANNER_FAIL_THRESHOLD = '9.0'  // Fail build if vulnerabilities exceed this score
+        CALICO_SCANNER_WARN_THRESHOLD = '7.0'  // Warn if vulnerabilities exceed this score
     }
     stages {
         stage('Checkout') {
@@ -61,6 +57,28 @@ pipeline {
                     echo "Building Docker image..."
                     docker build -t ${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH} .
                 '''
+            }
+        }
+        stage('Scan Docker Image') {
+            steps {
+                withCredentials([string(credentialsId: 'calico-scanner-token', variable: 'CALICO_SCANNER_TOKEN')]) {
+                    sh '''
+                        echo "Downloading and preparing Calico Image Assurance Scanner..."
+                        curl -Lo tigera-scanner ${CALICO_SCANNER_URL}
+                        chmod +x tigera-scanner
+
+                        echo "Scanning Docker image for vulnerabilities..."
+                        ./tigera-scanner scan \
+                            --apiurl ${CALICO_SCANNER_API_URL} \
+                            --token ${CALICO_SCANNER_TOKEN} \
+                            ${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH} \
+                            --fail_threshold ${CALICO_SCANNER_FAIL_THRESHOLD} \
+                            --warn_threshold ${CALICO_SCANNER_WARN_THRESHOLD}
+                        
+                        # Clean up
+                        rm tigera-scanner
+                    '''
+                }
             }
         }
         stage('Push Docker Image') {
