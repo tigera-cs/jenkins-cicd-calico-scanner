@@ -19,7 +19,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git(
-                    url: 'https://github.com/tigera-cs/faisal-jenkins-server-calico.git',
+                    url: 'https://github.com/tigera-cs/jenkins-cicd-calico-scanner.git',
                     branch: "${BRANCH_NAME}",
                     credentialsId: 'git-credentials'
                 )
