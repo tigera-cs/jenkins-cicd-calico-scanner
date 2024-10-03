@@ -1,5 +1,5 @@
-# Use the Windows Server Core base image
-FROM mcr.microsoft.com/windows/servercore
+# Use the Windows Server Core base image with a specific version (ltsc2022)
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 # Set environment variables for Apache directory and download URL
 ENV APACHE_DIR="C:\\Apache24" \
