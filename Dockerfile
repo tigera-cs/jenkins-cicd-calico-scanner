@@ -1,17 +1,24 @@
-# Use Alpine Linux version 3.16.2
-FROM alpine:3.19.3
+# Use the Windows Server Core base image
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
-# Install busybox-extras to get the httpd command
-RUN apk add --no-cache busybox-extras
+# Set environment variable for Apache directory and download URL
+ENV APACHE_DIR="C:\\Apache24" `
+    APACHE_DOWNLOAD_URL="https://www.apachelounge.com/download/VC15/binaries/httpd-2.4.54-win64-VS16.zip"
 
-# Set the working directory in the container
-WORKDIR /usr/share/web
+# Download and unzip Apache HTTP Server
+RUN powershell -Command `
+    Invoke-WebRequest -Uri $env:APACHE_DOWNLOAD_URL -OutFile C:\\apache.zip; `
+    Expand-Archive -Path C:\\apache.zip -DestinationPath C:\\; `
+    Remove-Item -Force C:\\apache.zip
+
+# Set the working directory
+WORKDIR C:/Apache24/htdocs
 
 # Copy the local files to the container's working directory
-COPY www .
+COPY www/ .
 
 # Expose port 8080 for the web server
 EXPOSE 8080
 
-# Start the simple http server on port 8080
-CMD ["httpd", "-f", "-p", "8080"]
+# Start Apache HTTP Server on port 8080
+CMD ["C:\\Apache24\\bin\\httpd.exe", "-f", "C:\\Apache24\\conf\\httpd.conf", "-D", "FOREGROUND"]
