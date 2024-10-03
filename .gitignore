@@ -1,3 +1,7 @@
 Jenkinsfile.gcr-artifactory
 Jenkinsfile.gcr-original
 Jenkinsfile.python-orig
+Dockerfile.windows-image
+Jenkinsfile.windows-image
+
+
