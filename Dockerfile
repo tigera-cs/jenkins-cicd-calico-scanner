@@ -1,15 +1,17 @@
-# Use the Windows Server Core base image with a specific version (ltsc2022)
+# Use the Windows Server Core base image
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 # Set environment variables for Apache directory and download URL
 ENV APACHE_DIR="C:\\Apache24" \
     APACHE_DOWNLOAD_URL="https://www.apachelounge.com/download/VC15/binaries/httpd-2.4.54-win64-VS16.zip"
 
+# Use PowerShell as the default shell
+SHELL ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
+
 # Download and unzip Apache HTTP Server
-RUN powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \
-    "Invoke-WebRequest -Uri $env:APACHE_DOWNLOAD_URL -OutFile 'C:\\apache.zip'; \
+RUN Invoke-WebRequest -Uri $env:APACHE_DOWNLOAD_URL -OutFile 'C:\\apache.zip'; \
     Expand-Archive -Path 'C:\\apache.zip' -DestinationPath 'C:\\'; \
-    Remove-Item -Force 'C:\\apache.zip'"
+    Remove-Item -Force 'C:\\apache.zip'
 
 # Set the working directory
 WORKDIR C:/Apache24/htdocs
