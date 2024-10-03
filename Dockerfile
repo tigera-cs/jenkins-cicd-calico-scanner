@@ -6,10 +6,10 @@ ENV APACHE_DIR="C:\\Apache24" \
     APACHE_DOWNLOAD_URL="https://www.apachelounge.com/download/VC15/binaries/httpd-2.4.54-win64-VS16.zip"
 
 # Download and unzip Apache HTTP Server
-RUN powershell -Command `
-    Invoke-WebRequest -Uri $env:APACHE_DOWNLOAD_URL -OutFile C:\\apache.zip; `
-    Expand-Archive -Path C:\\apache.zip -DestinationPath C:\\; `
-    Remove-Item -Force C:\\apache.zip
+RUN powershell.exe -Command `
+    Invoke-WebRequest -Uri $env:APACHE_DOWNLOAD_URL -OutFile 'C:\\apache.zip'; `
+    Expand-Archive -Path 'C:\\apache.zip' -DestinationPath 'C:\\'; `
+    Remove-Item -Force 'C:\\apache.zip'
 
 # Set the working directory
 WORKDIR C:/Apache24/htdocs
