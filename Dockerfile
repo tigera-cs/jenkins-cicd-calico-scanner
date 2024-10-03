@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 # Set environment variables for Apache directory and download URL
-ENV APACHE_DIR="C:\\Apache24" `
+ENV APACHE_DIR="C:\\Apache24" \
     APACHE_DOWNLOAD_URL="https://www.apachelounge.com/download/VC15/binaries/httpd-2.4.54-win64-VS16.zip"
 
 # Download and unzip Apache HTTP Server
