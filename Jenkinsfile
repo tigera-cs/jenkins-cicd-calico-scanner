@@ -55,7 +55,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Building Docker image..."
-                    docker build -t ${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH} .
+                    docker build -t ${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH}{jenkins-faisal} .
                 '''
             }
         }
@@ -71,7 +71,7 @@ pipeline {
                         ./tigera-scanner scan \
                             --apiurl ${CALICO_SCANNER_API_URL} \
                             --token ${CALICO_SCANNER_TOKEN} \
-                            ${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH} \
+                            ${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH}{jenkins-faisal} \
                             --fail_threshold ${CALICO_SCANNER_FAIL_THRESHOLD} \
                             --warn_threshold ${CALICO_SCANNER_WARN_THRESHOLD}
                         
@@ -85,7 +85,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Pushing Docker image to Artifact Registry..."
-                    docker push ${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH}
+                    docker push ${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH}{jenkins-faisal}
                 '''
             }
         }
