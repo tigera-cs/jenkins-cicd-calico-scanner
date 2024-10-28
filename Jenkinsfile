@@ -58,7 +58,7 @@ pipeline {
                     def tags = [
                         "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH}",
                         "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${BRANCH_NAME}",
-                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${faisal-jenkins}",
+                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:faisal-jenkins",
                         "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:latest"
                     ]
                     
@@ -100,7 +100,7 @@ pipeline {
                     def tags = [
                         "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH}",
                         "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${BRANCH_NAME}",
-                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${faisal-jenkins}",
+                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:faisal-jenkins",
                         "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:latest"
                     ]
                     
