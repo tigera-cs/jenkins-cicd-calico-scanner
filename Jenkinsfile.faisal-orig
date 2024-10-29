@@ -53,26 +53,10 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                script {
-                    // Define multiple tags: commit hash, branch name, and latest
-                    def tags = [
-                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH}",
-                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${BRANCH_NAME}",
-<<<<<<< HEAD
-                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:faisal-jenkins",
-=======
-                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${faisal-jenkins}",
->>>>>>> 8d8e384 (multiple-tags)
-                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:latest"
-                    ]
-                    
-                    def tagArgs = tags.collect { "-t ${it}" }.join(' ')
-                    
-                    sh """
-                        echo "Building Docker image with multiple tags..."
-                        docker build ${tagArgs} .
-                    """
-                }
+                sh '''
+                    echo "Building Docker image..."
+                    docker build -t ${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH} .
+                '''
             }
         }
         stage('Scan Docker Image') {
@@ -99,26 +83,10 @@ pipeline {
         }
         stage('Push Docker Image') {
             steps {
-                script {
-                    // Push all tags to the registry
-                    def tags = [
-                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH}",
-                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${BRANCH_NAME}",
-<<<<<<< HEAD
-                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:faisal-jenkins",
-=======
-                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${faisal-jenkins}",
->>>>>>> 8d8e384 (multiple-tags)
-                        "${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:latest"
-                    ]
-                    
-                    tags.each { tag ->
-                        sh """
-                            echo "Pushing Docker image with tag: ${tag}"
-                            docker push ${tag}
-                        """
-                    }
-                }
+                sh '''
+                    echo "Pushing Docker image to Artifact Registry..."
+                    docker push ${REGISTRY}/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${COMMIT_HASH}
+                '''
             }
         }
     }
